@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Triangles</title>
+    <link href="css/triangles.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div id="triangleApp">
+        <div id="interface" class="fleft">
+            <canvas id="canvas" width="500" height="500"></canvas>
+        </div>
+        <div id="options" class="fleft">
+            <span class="fleft">Choose color:&nbsp;<label for="colorInput"></label><input type="color" id="colorInput"/></span>
+            <input type="button" id="clearButton" class="button fleft" value="Clear!"/>
+            <input type="button" id="saveCanvas" class="button fleft" value="Save!"/>
+            <input type="button" id="loadCanvas" class="button fleft" value="Load!"/>
+            <select class="button" id="savesDropDown" name="Select a saved canvas">
+                <option value="default">Select state</option>
+            </select>
+        </div>
+    </div>
+
+    <script src="js/trianglesnew.js"></script>
+</body>
+</html>

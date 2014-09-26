@@ -1,0 +1,21 @@
+.fleft{
+    float: left;
+}
+
+#triangleApp{
+    width: 100%;
+    height: 502px;
+    background-color: #DFEDFF;
+}
+
+#canvas{
+    border: 1px solid #00ff9e;
+}
+
+#colorInput{
+    clear: both;
+}
+
+.button{
+    clear: both;
+}
