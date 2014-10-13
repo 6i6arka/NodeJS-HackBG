@@ -1,27 +1,57 @@
 var fs = require('fs'),
     http = require('https'),
-    filename = process.argv[2],
-    newObj = {};
+    ArgumentParser = require("argparse").ArgumentParser,
+    parser = new ArgumentParser(),
+    args,
+    actions = {
+        "ini": toObjectString,
+        "json": toIniString
+    };
+
+(function () {
+    parser.addArgument(["fileName"]);
+    parser.addArgument(["-t", "--type"]);
+    args = parser.parseArgs();
+
+    console.log(args);
+    convert(args);
+})();
+
+function convert(options){
+    if (!isUrl(options.fileName)) {
+
+        fs.readFile(options.fileName + '.' + options.type, 'utf8', function (err, data) {
+
+            if (err) { console.log(err) } else {
+                try{
+                    createFile(options.fileName, options.type === 'ini' ? 'json' : 'ini', actions[options.type](data.toString()));
+                } catch(e){
+                    throw new Error("Unsupported file format!");
+                }
+            }
+        });
+    } else {
+        http.get(options.fileName, function(response){
+            response.on('data', function(data){
+                var splitUrl = options.fileName.split('/');
+                try{
+                    createFile(options.fileName, options.type === 'ini' ? 'json' : 'ini', actions[options.type](data.toString()));
+                } catch(e){
+                    throw new Error("Unsupported file format!");
+                }
+            });
+        });
+    }
+}
 
 function isUrl(s) {
     var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
     return regexp.test(s);
 }
 
-function createJson(fileName, obj){
-    fs.writeFile(fileName.split('.')[0] + '.json', JSON.stringify(obj, null, '   '), function (err) {
-        if (err) { console.log(err); }
-        else { console.log('Success'); }
-    });
-}
-
-function getFileName(fileName){
-    var splitFileName = fileName.split('.');
-    return splitFileName[splitFileName.length-1];
-}
-
-function toIniString(json){
-    var str = '';
+function toIniString(jsonString){
+    var str = '',
+        json = JSON.parse(jsonString);
     Object.keys(json).forEach(function(key){
         str += '[' + key + ']\n';
         Object.keys(json[key]).forEach(function(subKey){
@@ -32,53 +62,28 @@ function toIniString(json){
     return str;
 }
 
-function createIni(fileName, iniString){
-    fs.writeFile(fileName, iniString, function (err){
+function createFile(fileName, type, string){
+    fs.writeFile(fileName + '.' + type, string, function (err){
         if (err) { console.log(err); }
         else { console.log('Success'); }
     });
 }
 
-function toObject(string){
+function toObjectString(iniString){
     var obj = {},
         mainProp = '',
-        lines = string.split('\n');
+        lines = iniString.split('\n');
 
     lines.forEach(function (line) {
         if (!line[0] || line[0] === ';') { return false; }
         else if (line[0] === '[') {
-            mainProp = line.replace(/[\])}[{(]/g, '');
+            mainProp = line.replace(/[\])}[{(]/g, '').trim();
             obj[mainProp] = {};
         } else {
-            var temp = line.replace(/\s+/g,'').split('=');
+            var temp = line.trim().split('=');
             obj[mainProp][temp[0]] = temp[1];
         }
     });
-    return obj;
+    return JSON.stringify(obj, null, "\t");
 }
-
-
-if (!isUrl(filename)) {
-    fs.readFile(filename, 'utf8', function (err, data) {
-            if (err) {
-                console.log(err)
-            } else {
-                if(getFileName(filename) === 'ini'){
-                    createJson(filename, toObject(data.toString()));
-                } else {
-                    createIni(filename.split('.')[0] + '.ini', toIniString(JSON.parse(data.toString())));
-                }
-            }
-        }
-    );
-} else {
-    http.get(filename, function(response){
-        response.on('data', function(data){
-            var splitUrl = process.argv[2].split('/'),
-                fileName = splitUrl[splitUrl.length-1];
-            createJson(fileName, toObject(data.toString()));
-        });
-    });
-}
-
 

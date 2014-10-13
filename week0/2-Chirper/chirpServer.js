@@ -1,5 +1,7 @@
 var http = require('http'),
+    fs = require('fs'),
     chirpsFile = require('./chirps.json');
+//    usersFile = require('./config.json');
 
 http.createServer(function(req, res){
     var payload = "",
@@ -17,8 +19,8 @@ http.createServer(function(req, res){
         res.end(JSON.stringify(chirpsFile));
     }
 
-    function createChirp(opt){
-
+    function createChirp(){
+        console.log(JSON.parse(payload));
     }
 
     function sendUsers() {
@@ -45,7 +47,6 @@ http.createServer(function(req, res){
     });
 
     req.on('end', function() {
-        console.log(payload);
         if(routes[req.url]){
             routes[req.url].call(null, req, res);
         }

@@ -6,7 +6,7 @@ var http = require('http'),
         "getall": getAllChirps,
         "register": registerUser,
         "create": createChirp
-    }, post_data, post_options, post_req;
+    }, post_options, post_req;
 
 parser.addArgument(["--getall"], {action: 'storeTrue'});
 parser.addArgument(["--create"]);
@@ -31,30 +31,32 @@ function registerUser(){
 
 }
 
-function createChirp(chirp/*string*/) {
-    post_options = {
+function postRequest(opt){
+    var post_options = {
         host: "localhost",
         port: "8080",
-        path: "",
+        path: opt.path,
         method: "POST"
     };
 
-    post_req = http.request(post_options, function(res){
+    var post_req = http.request(post_options, function(res){
         res.setEncoding('utf8');
         res.on('data', function(data){
             console.log(data);
         });
     });
 
-    post_req.write(JSON.stringify({
-        hello: "world"
-    }));
+    post_req.write(JSON.stringify(opt.postData));
 
     post_req.end();
 }
 
-//http.get("localhost:8080", function(res){
-//    res.on('data', function(){
-//
-//    });
-//});
+function createChirp(chirp/*string*/) {
+    postRequest({
+        path: "/chirp",
+        postData: {
+            chirp: chirp,
+            user: currentUser
+        }
+    });
+}
