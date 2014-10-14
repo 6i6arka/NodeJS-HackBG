@@ -1,1 +1,14 @@
-{}
+[
+	{
+		"userId": 5,
+		"chirpId": 0,
+		"chirpText": "Sasho e pedal!",
+		"chirpTime": "2-10-2014 13:20"
+	},
+	{
+		"userId": 0,
+		"chirpId": 1,
+		"chirpText": "Zdravei svqt!",
+		"chirpTime": "2-10-2014 13:24"
+	}
+]
