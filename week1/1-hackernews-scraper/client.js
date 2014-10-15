@@ -2,11 +2,14 @@ var http = require('http'),
     ArgumentParser = require('argparse').ArgumentParser,
     parser = new ArgumentParser(),
     actions = {
-        subscribe: subscribe
+        subscribe: subscribe,
+        unsubscribe: unsubscribe
 };
 
 parser.addArgument(["--subscribe"], {action: "storeTrue"});
 parser.addArgument(["--words"]);
+parser.addArgument(["--unsubscribe"], {action: "storeTrue"});
+parser.addArgument(["--subId"]);
 
 var args = parser.parseArgs();
 
@@ -14,16 +17,11 @@ Object.keys(args).forEach(function(arg){
     if(args[arg] && actions[arg]){ actions[arg](); }
 });
 
-function subscribe(){
-
-    var postData = {
-        email : "node.js.mail.testing@gmail.com",
-        words: args.words.split(',')
-    };
+function request(opt){
 
     var postOptions = {
         hostname: "localhost",
-        path: '/subscribe',
+        path: opt.path,
         port: 8080,
         method: "POST",
         headers: {
@@ -31,26 +29,52 @@ function subscribe(){
         }
     };
 
-    var subReq = http.request(postOptions, function(res){
+    var req = http.request(postOptions, function(res){
         var payload = '';
         res.setEncoding('utf8');
-        res.on('data', function(data){
+        res.on('data', function(data) {
             payload += data;
         });
 
         res.on('end', function(){
-            console.log(payload);
-        })
+            opt.action(payload);
+        });
     });
 
-    subReq.on('error', function(e){
+    req.on('error', function(e){
         console.log('problem with request: ' + e.message);
     });
 
-    console.log(postData);
-    subReq.write(JSON.stringify(postData));
+    req.write(JSON.stringify(opt.postData));
 
-    subReq.end();
+    req.end();
+}
+
+function unsubscribe() {
+
+    request({
+        path: "/unsubscribe",
+        postData: {
+            subscriberId: args.subId
+        },
+        action: function(data){
+            console.log(data);
+        }
+    });
+}
+
+function subscribe(){
+
+    request({
+        path: "/subscribe",
+        postData:{
+            email : "node.js.mail.testing@gmail.com",
+            words: args.words.split(',')
+        },
+        action: function (data){
+            console.log(data);
+        }
+    });
 }
 
 
