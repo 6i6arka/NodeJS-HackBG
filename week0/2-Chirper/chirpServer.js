@@ -1,7 +1,20 @@
 var http = require('http'),
     fs = require('fs'),
-    chirps = require('./chirps.json'),
-    users = require('./users.json');
+    chirps = [
+        {
+            userId: 5,
+            chirpId: 0,
+            chirpText: "Sasho e pedal!",
+            chirpTime: "2-10-2014 13:20"
+        },
+        {
+            userId: 0,
+            chirpId: 1,
+            chirpText: "Zdravei svqt!",
+            chirpTime: "2-10-2014 13:24"
+        }
+    ],
+    users = [];
 
 http.createServer(function(req, res){
     var payload = "",
@@ -31,8 +44,6 @@ http.createServer(function(req, res){
                     chirpTime: getFormattedDate()
                 });
                 item.chirps += 1;
-                fs.writeFile('./chirps.json', JSON.stringify(chirps, null, "\t"));
-                fs.writeFile('./users.json', JSON.stringify(users, null, "\t"));
             }
         });
         res.end(chirpsLen !== chirps.length ? "Success" : "No such user");
@@ -61,10 +72,6 @@ http.createServer(function(req, res){
             return item.user === newUser.userName;
         }).length === 0 ? users.push(response) : (response = "User name taken!");
 
-        fs.writeFile("./users.json", JSON.stringify(users, null, "\t"), null, function(err){
-            console.log(err);
-        });
-
         res.writeHead(200, 'OK', {'Content-Type': 'application/json'});
         res.end(JSON.stringify(response));
     }
@@ -73,7 +80,25 @@ http.createServer(function(req, res){
 
     }
 
-    function sendChirps(opt){
+    function sendChirps(){
+        console.log(payload);
+        var options = JSON.parse(payload),
+            result = [],
+            filterMethod = options.userId ? 'userId' : options.chirpId ? 'chirpId' : false;
+        function filter(item, filterBy) {
+            if(filterBy){
+                console.log(options[filterBy], item[filterBy]);
+                if(item[filterBy] === Number(options[filterBy])){
+                    result.push(item);
+                }
+            }
+        }
+
+        chirps.forEach(function(chirp){
+            filter(chirp, filterMethod);
+        });
+
+        console.log(result);
 
     }
 

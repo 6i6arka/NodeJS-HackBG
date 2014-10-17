@@ -7,7 +7,8 @@ var http = require('http'),
         "getall": getAllChirps,
         "getusers": getAllUsers,
         "register": registerUser,
-        "create": createChirp
+        "create": createChirp,
+        "getchirps": getChirps
     };
 
 parser.addArgument(["--getall"], {action: 'storeTrue'});
@@ -16,7 +17,12 @@ parser.addArgument(["--create"], {action: 'storeTrue'});
 parser.addArgument(["--message"]);
 parser.addArgument(["--register"], {action: 'storeTrue'});
 parser.addArgument(["--user"]);
+parser.addArgument(["--getchirps"], {action: 'storeTrue'});
+parser.addArgument(["--chirpId"]);
+parser.addArgument(["--userId"]);
 var args = parser.parseArgs();
+
+console.log(args);
 
 Object.keys(args).forEach(function(arg){
     if(actions[arg] && args[arg]){
@@ -52,6 +58,19 @@ function registerUser(){
             }
         });
     }
+}
+
+function getChirps(){
+    postRequest({
+        path: '/chirps',
+        postData: {
+            chirpId: args.chirpId || '',
+            userId: args.userId || ''
+        },
+        action: function(data){
+            console.log(data);
+        }
+    });
 }
 
 function createChirp() {

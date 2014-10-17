@@ -64,7 +64,7 @@ function toIniString(jsonString){
 
 function createFile(fileName, type, string){
     fs.writeFile(fileName + '.' + type, string, function (err){
-        if (err) { console.log(err); }
+        if (err) { throw err; }
         else { console.log('Success'); }
     });
 }
