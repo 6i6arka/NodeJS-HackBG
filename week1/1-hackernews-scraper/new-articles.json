@@ -1,4 +1,18 @@
-{
-    "max-item": 0,
-    "articles": []
-}
+[
+	{
+		"by": "infinity0",
+		"id": 8486758,
+		"parent": 8486503,
+		"text": "No, we understand it. It doesn&#x27;t mean it&#x27;s a good thing to do, or that we agree with it and won&#x27;t criticise it.<p>Also, I am from the East though I grew up in the West, and the attempt to deflect criticism just on the basis of &quot;it&#x27;s a different society&quot; is disgusting, a hindrance to progress, and frankly quite racist. There is an ongoing campaign in India against the practice of dowry, I guess you also want to argue &quot;Westerners don&#x27;t understand that India just traditionally has dowry&quot;??",
+		"time": 1413888968,
+		"type": "comment"
+	},
+	{
+		"by": "Someone",
+		"id": 8486759,
+		"parent": 8486652,
+		"text": "In my book, there is a difference between explicitly asking for help&#x2F;usage and passing arguments that do not make sense, which triggers the output of help&#x2F;usage.<p>The former, I think, should write to stdout and return 0, the latter should write to stderr and return something non-zero.<p>Giving help if the user asks for it is normal behaviour.",
+		"time": 1413889060,
+		"type": "comment"
+	}
+]

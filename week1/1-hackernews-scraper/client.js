@@ -68,7 +68,7 @@ function subscribe(){
     request({
         path: "/subscribe",
         postData:{
-            email : "node.js.mail.testing@gmail.com",
+            email : "nodejs.testing.rado@gmail.com",
             words: args.words.split(',')
         },
         action: function (data){

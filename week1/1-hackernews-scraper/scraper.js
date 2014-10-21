@@ -1,6 +1,8 @@
 var https = require('https'),
     fs = require('fs'),
-    prevMaxArticle = null;
+    http = require('http'),
+    prevMaxArticle = null,
+    newArticles = [];
 
 
 
@@ -23,18 +25,39 @@ function getArticles(){
 }
 
 function getNewArticles(prevMax, currentMax){
-    var newArticles = [];
     if(prevMax && prevMax <= currentMax){
         https.get("https://hacker-news.firebaseio.com/v0/item/" + prevMax + ".json", function(res){
             res.on('data', function(data){
-                if (newArticles.indexOf(JSON.parse(data.toString())) > -1) {
+                if (prevMax === currentMax) {
+                    if (newArticles.length && newArticles[newArticles.length - 1]["id"] !== currentMax) {
+                        newArticles.push(JSON.parse(data.toString()));
+                        console.log(data.toString());
+                    }
+                } else {
                     newArticles.push(JSON.parse(data.toString()));
                     console.log(data.toString());
                 }
-                getNewArticles(prevMax + 1, currentMax);
+            getNewArticles(prevMax + 1, currentMax);
             });
+        });
+    } else {
+        fs.writeFile("./new-articles.json", JSON.stringify(newArticles, null, '\t'), function(err){
+            if (err) throw err;
+            var postOptions = {
+                hostname: "localhost",
+                path: '/new-articles',
+                port: 8081,
+                method: "POST",
+                headers: {
+                    'content-type': 'application/json'
+                }
+            };
+            console.log('waking notifier');
+            var request = http.request(postOptions, function(res){
+                console.log(res.toString());
+            });
+            request.end();
         });
     }
 }
-
-setInterval(getArticles, 20000);
+setInterval(getArticles, 5000);
